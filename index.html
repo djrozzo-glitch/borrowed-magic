@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Взаймы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alice&family=Marck+Script&family=Yeseva+One&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: the whole page is one spread of a green-paper account book.
+   Left leaf = today's trouble and the village, right leaf = the Ledger. Debt is written by hand in red ink. */
+:root{
+  color-scheme: light;
+  --paper:#e3ecdd; --paper-deep:#d3dfcc; --rule:#a9c2a4;
+  --ink:#1c2a22; --ink-soft:#51645a; --red:#b0261c; --margin:#d98e86;
+  --display:"Yeseva One","Georgia",serif;
+  --body:"Alice","Georgia","Times New Roman",serif;
+  --hand:"Marck Script","Segoe Script","Comic Sans MS",cursive;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--paper);
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);
+  color:var(--ink); font:17px/1.5 var(--body); padding:24px 16px 48px;
+}
+.book{max-width:1000px;margin:0 auto;display:grid;gap:24px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px;border-bottom:3px double var(--ink);padding-bottom:12px}
+h1{font:400 clamp(40px,7vw,64px)/1 var(--display);margin:0;letter-spacing:.02em}
+.motto{color:var(--ink-soft);flex:1 1 240px;margin:0}
+.deal{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--ink-soft)}
+.spread{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px}
+@media (max-width:760px){.spread{grid-template-columns:minmax(0,1fr)}}
+.leaf{display:grid;gap:20px;align-content:start}
+section{background:var(--paper);border:1px solid var(--ink);padding:16px 18px;position:relative}
+section::before{content:"";position:absolute;left:10px;top:0;bottom:0;border-left:1px solid var(--margin)}
+section>*{position:relative}
+h2{font:400 15px/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;color:var(--ink-soft)}
+.day{font-size:15px;color:var(--ink-soft);letter-spacing:.06em}
+.trouble h3{font:400 clamp(30px,5vw,42px)/1.05 var(--display);margin:4px 0 8px;text-wrap:balance}
+.trouble p{margin:0 0 10px;max-width:46ch}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 14px;padding:0;list-style:none;font-size:15px}
+.facts b{font-weight:400;color:var(--red)}
+.dawn{border-top:1px dashed var(--ink-soft);margin-top:14px;padding-top:10px;font-size:15px}
+.dawn ul,.log ul{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.dawn li{color:var(--red)}
+.forecast{font-size:15px;color:var(--ink-soft);margin:12px 0 0}
+button{
+  font:400 16px/1.2 var(--body);color:var(--ink);background:var(--paper);
+  border:1px solid var(--ink);padding:8px 12px;cursor:pointer;border-radius:2px;
+  box-shadow:2px 2px 0 var(--ink);transition:transform .08s,box-shadow .08s;
+}
+button:hover:not(:disabled){background:var(--paper-deep)}
+button:active:not(:disabled){transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+button:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+button:disabled{color:var(--ink-soft);border-color:var(--rule);box-shadow:none;cursor:not-allowed}
+button.primary{background:var(--ink);color:var(--paper)}
+button.primary:hover:not(:disabled){background:#2c4034}
+button.primary:disabled{background:var(--paper-deep);color:var(--ink-soft)}
+button.small{font-size:14px;padding:5px 9px;box-shadow:1px 1px 0 var(--ink)}
+.row-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.hint{font-size:14px;color:var(--ink-soft)}
+
+.ledger{display:grid}
+.cred{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;padding:12px 0;border-top:1px solid var(--ink)}
+.cred:first-of-type{border-top:0;padding-top:0}
+.cred .who{font:400 24px/1.1 var(--display)}
+.cred .takes{font-size:14px;color:var(--ink-soft)}
+.owed{font:400 34px/1 var(--hand);color:var(--red);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.owed small{font-size:20px;color:var(--ink-soft)}
+.owed.clear{color:var(--ink-soft)}
+.pips{display:flex;gap:4px;flex-wrap:wrap;align-items:center;grid-column:1/-1}
+.pip{width:16px;height:16px;border:1px solid var(--ink);border-radius:50%}
+.pip.on{background:var(--red);border-color:var(--red)}
+.cred .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+.warn{font-size:14px;color:var(--red)}
+.kin{font-size:14px;color:var(--ink-soft)}
+.cred.took{animation:took 1.1s ease-out}
+@keyframes took{0%{background:rgba(176,38,28,.28)}100%{background:transparent}}
+.stamp{font:400 13px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--red);border:2px solid var(--red);padding:3px 6px;transform:rotate(-4deg);display:inline-block}
+
+.people{display:flex;flex-wrap:wrap;gap:6px 8px;margin:0 0 14px;padding:0;list-style:none}
+.people li{border:1px solid var(--ink);padding:2px 9px;font-size:16px}
+.people li.gone{text-decoration:line-through;color:var(--ink-soft);border-color:var(--rule)}
+.people li.noname{font-style:italic;color:var(--ink-soft);border-style:dashed}
+.fields{display:flex;gap:8px;margin:0 0 8px}
+.field{width:44px;height:32px;border:1px solid var(--ink);background:repeating-linear-gradient(90deg,#7fa172 0 4px,#b9d0ae 4px 8px)}
+.field.dry{background:none;border-style:dashed;border-color:var(--ink-soft)}
+.tally{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin:0}
+.tally dt{color:var(--ink-soft)}.tally dd{margin:0}
+.work{letter-spacing:.2em}
+.rules ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px}
+.log{font-size:14px;color:var(--ink-soft)}
+.log li span{color:var(--ink);font-variant-numeric:tabular-nums;margin-right:6px}
+.verdict h3{font:400 clamp(30px,5vw,44px)/1.05 var(--display);margin:4px 0 8px}
+.verdict .score{font:400 40px/1 var(--hand);color:var(--red)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="book">
+  <header>
+    <h1>Взаймы</h1>
+    <p class="motto">Магия никому не принадлежит. Её берут в долг у реки, огня, памяти и завтрашнего дня.</p>
+    <div class="deal"><span id="deal-label"></span>
+      <button class="small" id="btn-daily" data-act="daily">Расклад дня</button>
+      <button class="small" id="btn-random" data-act="random">Случайный расклад</button>
+    </div>
+  </header>
+  <div class="spread">
+    <div class="leaf">
+      <section class="trouble" id="trouble" aria-live="polite"></section>
+      <section id="village"></section>
+    </div>
+    <div class="leaf">
+      <section id="ledger"></section>
+      <section class="rules">
+        <h2>Условия займа</h2>
+        <ol>
+          <li>Каждый день приходит беда. Займите магию у одного кредитора или перетерпите.</li>
+          <li>На рассвете каждый непогашенный долг растёт на 1.</li>
+          <li>Долг больше терпения: кредитор забирает своё. После этого терпения у него меньше.</li>
+          <li>Жители с именами работают. Их трудом вы возвращаете долг.</li>
+          <li>После 20-го дня наступает День Расчёта: взыщут всё, что осталось.</li>
+        </ol>
+      </section>
+      <section class="log" id="log"></section>
+    </div>
+  </div>
+</div>
+<script>
+/* ---------- Game core: no DOM, state is plain JSON ---------- */
+(function(){
+'use strict';
+var CFG={days:20,limit:5,minLimit:2,workDiv:4,feeds:3,fields:4};
+var NAMES=['Веда','Ждан','Мирра','Олех','Ярина','Тихон','Борк','Лада'];
+var ORDER=['river','fire','memory','tomorrow'];
+var CRED={
+  river:{name:'Река',dat:'Реке',takes:'поле',took:'Река взяла своё'},
+  fire:{name:'Огонь',dat:'Огню',takes:'очаг вместе с жильцом',took:'Огонь взял своё'},
+  memory:{name:'Память',dat:'Памяти',takes:'имя жителя',took:'Память взяла своё'},
+  tomorrow:{name:'Завтра',dat:'Завтра',takes:'ваш следующий день',took:'Завтра взяло своё'}
+};
+var TROUBLES={
+  drought:{name:'Засуха',text:'Колодцы показывают дно. Земля трескается под ногами.',hit:'fields',kin:'river',bar:'fire'},
+  flood:{name:'Паводок',text:'Вода идёт на нижние поля и не собирается останавливаться.',hit:'fields',kin:'tomorrow',bar:'river'},
+  frost:{name:'Стужа',text:'Мороз пришёл на месяц раньше срока. Дров не хватит.',hit:'people',kin:'fire',bar:'river'},
+  barn:{name:'Пожар в амбаре',text:'Горит зерно, которым собирались сеять.',hit:'fields',kin:'river',bar:'fire'},
+  plague:{name:'Мор',text:'В трёх домах не встают с постели. Лекарство знала только покойная знахарка.',hit:'people',kin:'memory',bar:null},
+  wolves:{name:'Волки',text:'Стая перестала бояться частокола.',hit:'people',kin:'fire',bar:null},
+  taxman:{name:'Сборщик податей',text:'Он приехал за землёй, которую деревня не может отдать.',hit:'fields',kin:'memory',bar:null},
+  lost:{name:'Пропал ребёнок',text:'Ушёл за ягодами в сторону болота. Следы обрываются у воды.',hit:'people',kin:'tomorrow',bar:null},
+  locust:{name:'Саранча',text:'Туча на горизонте оказалась не тучей.',hit:'fields',kin:'tomorrow',bar:null}
+};
+function rnd(S){S.rng=(S.rng+0x6D2B79F5)|0;var t=S.rng;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;}
+function alive(S){return S.people.filter(function(p){return p.alive;});}
+function named(S){return S.people.filter(function(p){return p.alive&&p.named;});}
+function workOf(S){return Math.ceil(named(S).length/CFG.workDiv);}
+function today(S){return S.deck[S.day-1];}
+function hitSize(sev){return Math.ceil(sev/2);}
+function note(S,text,dawn){S.log.unshift({d:S.day,t:text});if(S.log.length>60)S.log.pop();if(dawn)S.dawn.push(text);}
+
+function newGame(seed,label){
+  var S={v:1,seed:seed,label:label,rng:seed|0,day:1,total:CFG.days,fields:CFG.fields,
+    people:NAMES.map(function(n){return{n:n,named:true,alive:true};}),
+    debt:{river:0,fire:0,memory:0,tomorrow:0},limit:{river:CFG.limit,fire:CFG.limit,memory:CFG.limit,tomorrow:CFG.limit},
+    hidden:[],forecast:true,skip:0,deck:[],resolved:false,work:0,log:[],dawn:[],tookNow:[],over:null};
+  var ids=Object.keys(TROUBLES),prev=null,quietBefore=true;
+  for(var d=1;d<=S.total;d++){
+    var sev=(d<=5?1:d<=12?2:3)+Math.floor(rnd(S)*2);
+    if(!quietBefore&&rnd(S)<0.14){S.deck.push({t:null,sev:0});quietBefore=true;continue;}
+    var id;do{id=ids[Math.floor(rnd(S)*ids.length)];}while(id===prev);
+    prev=id;quietBefore=false;S.deck.push({t:id,sev:sev});
+  }
+  S.resolved=!today(S).t;S.work=workOf(S);
+  return S;
+}
+function cost(S,cid){var tr=today(S);if(!tr.t)return null;var T=TROUBLES[tr.t];if(T.bar===cid)return null;return Math.max(1,tr.sev-(T.kin===cid?1:0));}
+function loseOne(S){var a=alive(S);if(!a.length)return null;var p=a[Math.floor(rnd(S)*a.length)];p.alive=false;return p.named?p.n:'безымянный';}
+function strike(S,kind,n,dawn,why){
+  if(kind==='fields'){
+    var lost=Math.min(n,S.fields);S.fields-=lost;
+    if(lost)note(S,why+': '+(lost===1?'потеряно поле':'потеряно полей: '+lost)+'.',dawn);
+    kind='people';n-=lost;if(n<=0)return;
+    why=why+', а полей больше нет';
+  }
+  var gone=[];for(var i=0;i<n;i++){var who=loseOne(S);if(who)gone.push(who);}
+  if(gone.length)note(S,why+': деревня потеряла ('+gone.join(', ')+').',dawn);
+}
+function take(S,cid,final){
+  var C=CRED[cid];S.tookNow.push(cid);
+  if(cid==='river'){
+    if(S.fields>0){S.fields--;note(S,C.took+': поле у воды высохло.',true);}
+    else{var w=loseOne(S);note(S,C.took+': полей не осталось, ушёл человек ('+w+').',true);}
+  }else if(cid==='fire'){
+    var who=loseOne(S);note(S,C.took+': погас очаг, дом опустел ('+who+').',true);
+  }else if(cid==='memory'){
+    var ns=named(S);
+    if(ns.length){var p=ns[Math.floor(rnd(S)*ns.length)];p.named=false;note(S,C.took+': никто не помнит, как звали '+p.n+'. Безымянные не работают.',true);}
+    var nx=['memory','tomorrow','fire','river'].filter(function(c){return S.hidden.indexOf(c)<0;})[0];
+    if(nx&&!final){S.hidden.push(nx);note(S,'Вы больше не помните, сколько должны '+CRED[nx].dat+'.',true);}
+  }else{
+    if(final){var x=loseOne(S);note(S,C.took+': дней больше нет, поэтому оно забрало человека ('+x+').',true);}
+    else{S.skip++;S.forecast=false;note(S,C.took+': следующий день пройдёт без вас. Вы больше не видите, что будет.',true);}
+  }
+}
+function hunger(S,dawn){var cap=S.fields*CFG.feeds;if(alive(S).length>cap){var w=loseOne(S);note(S,'Полей не хватает, чтобы прокормить всех. Деревню покинул: '+w+'.',dawn);}}
+function finish(S,early){S.over={early:!!early,named:named(S).length,alive:alive(S).length,fields:S.fields};S.resolved=true;S.work=0;return true;}
+function dead(S){return named(S).length===0?finish(S,true):false;}
+function borrow(S,cid){
+  if(S.over||S.resolved)return false;var c=cost(S,cid);if(c===null)return false;
+  S.debt[cid]+=c;S.resolved=true;
+  note(S,TROUBLES[today(S).t].name+': заняли '+c+' у '+({river:'Реки',fire:'Огня',memory:'Памяти',tomorrow:'Завтра'})[cid]+'.');return true;
+}
+function endure(S){
+  if(S.over||S.resolved)return false;var tr=today(S),T=TROUBLES[tr.t];
+  strike(S,T.hit,hitSize(tr.sev),false,T.name+', перетерпели');S.resolved=true;dead(S);return true;
+}
+function repay(S,cid){if(S.over||S.work<=0||S.debt[cid]<=0)return false;S.debt[cid]--;S.work--;return true;}
+function endDay(S){
+  if(S.over||!S.resolved)return false;
+  S.dawn=[];S.tookNow=[];hunger(S,true);
+  for(;;){
+    if(dead(S))return true;
+    S.day++;
+    if(S.day>S.total){
+      S.day=S.total;note(S,'День Расчёта. Кредиторы пришли все разом.',true);
+      ORDER.forEach(function(c){var n=Math.ceil(S.debt[c]/S.limit[c]);for(var i=0;i<n;i++)take(S,c,true);S.debt[c]=0;});
+      return finish(S,named(S).length===0);
+    }
+    ORDER.forEach(function(c){if(S.debt[c]>0)S.debt[c]++;});
+    ORDER.forEach(function(c){
+      if(S.debt[c]>S.limit[c]){var n=Math.floor(S.debt[c]/S.limit[c]);for(var i=0;i<n;i++)take(S,c,false);S.debt[c]-=n*S.limit[c];S.limit[c]=Math.max(CFG.minLimit,S.limit[c]-1);}
+    });
+    if(dead(S))return true;
+    if(S.skip>0){
+      S.skip--;var tr=today(S);
+      if(tr.t)strike(S,TROUBLES[tr.t].hit,hitSize(tr.sev),true,'День '+S.day+' прошёл без вас. '+TROUBLES[tr.t].name);
+      else note(S,'День '+S.day+' прошёл без вас. Было тихо.',true);
+      hunger(S,true);continue;
+    }
+    break;
+  }
+  S.resolved=!today(S).t;S.work=workOf(S);return true;
+}
+globalThis.BM={CFG:CFG,CRED:CRED,ORDER:ORDER,TROUBLES:TROUBLES,newGame:newGame,cost:cost,borrow:borrow,endure:endure,repay:repay,endDay:endDay,
+  today:today,alive:alive,named:named,workOf:workOf,hitSize:hitSize};
+})();
+
+/* ---------- Interface ---------- */
+if(typeof document!=='undefined')(function(){
+'use strict';
+var BM=globalThis.BM,S=null,KEY='borrowed-magic-run-v1';
+var $=function(id){return document.getElementById(id);};
+function hash(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h|0;}
+function daily(){var d=new Date(),p=function(n){return(n<10?'0':'')+n;};
+  var iso=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+  return BM.newGame(hash(iso),'Расклад дня, '+p(d.getDate())+'.'+p(d.getMonth()+1));}
+function random(){var s=(Math.random()*4294967296)|0;return BM.newGame(s,'Случайный расклад №'+((s>>>0)%10000));}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function load(){try{var r=JSON.parse(localStorage.getItem(KEY));return r&&r.v===1&&r.deck?r:null;}catch(e){return null;}}
+function plural(n,a,b,c){var m=n%100,k=n%10;return m>10&&m<20?c:k===1?a:k>=2&&k<=4?b:c;}
+
+function drawTrouble(){
+  var h='';
+  if(S.over){
+    var n=S.over.named,rank=n>=8?'Чистая книга':n>=6?'Добрый должник':n>=3?'Расплатились как смогли':n>=1?'Последний свидетель':'Пустая деревня';
+    h+='<div class="day">'+(S.over.early?'День '+S.day+' из '+S.total:'День Расчёта')+'</div>';
+    h+='<div class="verdict"><h3>'+rank+'</h3>';
+    h+='<p>'+(n>0?'Долги закрыты. Своё имя помнят <span class="score">'+n+'</span> из 8 жителей, полей осталось '+S.over.fields+'.'
+      :'В деревне не осталось никого, кто помнит своё имя. Долг взыскан полностью.')+'</p>';
+    h+='<div class="row-actions"><button class="primary" id="again-daily" data-act="daily">Расклад дня заново</button><button id="again-random" data-act="random">Случайный расклад</button></div></div>';
+  }else{
+    var tr=BM.today(S);
+    h+='<div class="day">День '+S.day+' из '+S.total+' · до Дня Расчёта '+(S.total-S.day+1)+'</div>';
+    if(tr.t){
+      var T=BM.TROUBLES[tr.t],hs=BM.hitSize(tr.sev);
+      h+='<h3>'+T.name+'</h3><p>'+T.text+'</p>';
+      h+='<ul class="facts"><li>Сила беды: <b>'+tr.sev+'</b></li><li>Если перетерпеть: <b>−'+hs+' '+(T.hit==='fields'?plural(hs,'поле','поля','полей'):plural(hs,'житель','жителя','жителей'))+'</b></li></ul>';
+      h+='<div class="row-actions">';
+      if(S.resolved)h+='<span class="stamp">Решено</span><span class="hint">Верните часть долга или закончите день.</span>';
+      else h+='<button id="endure" data-act="endure">Перетерпеть</button><span class="hint">Или займите у кредитора в Книге долгов.</span>';
+      h+='</div>';
+    }else{
+      h+='<h3>Тихий день</h3><p>Никто не стучит в ворота. Можно поработать на кредиторов.</p>';
+    }
+    var nx=S.deck[S.day];
+    h+='<p class="forecast">'+(S.day>=S.total?'Завтра День Расчёта.':!S.forecast?'Завтра вам больше не видно.':nx.t?'Завтра: '+BM.TROUBLES[nx.t].name+', сила '+nx.sev+'.':'Завтра: тихий день.')+'</p>';
+  }
+  if(S.dawn.length){h+='<div class="dawn"><h2>'+(S.over&&!S.over.early?'Расчёт':'Что случилось на рассвете')+'</h2><ul>';S.dawn.forEach(function(t){h+='<li>'+t+'</li>';});h+='</ul></div>';}
+  $('trouble').innerHTML=h;
+}
+function drawLedger(){
+  var h='<h2>Книга долгов</h2><div class="ledger">';
+  BM.ORDER.forEach(function(c){
+    var C=BM.CRED[c],d=S.debt[c],L=S.limit[c],hid=S.hidden.indexOf(c)>=0,k=S.over?null:BM.cost(S,c),T=BM.today(S).t?BM.TROUBLES[BM.today(S).t]:null;
+    h+='<div class="cred'+(S.tookNow.indexOf(c)>=0?' took':'')+'"><div><div class="who">'+C.name+'</div><div class="takes">Забирает: '+C.takes+'</div></div>';
+    h+='<div class="owed'+(d===0&&!hid?' clear':'')+'" aria-label="Долг '+(hid?'неизвестен':d+' при терпении '+L)+'">'+(hid?'?':d)+' <small>/ '+(hid?'?':L)+'</small></div>';
+    if(!hid){h+='<div class="pips" aria-hidden="true">';for(var i=0;i<L;i++)h+='<span class="pip'+(i<d?' on':'')+'"></span>';h+='</div>';}
+    h+='<div class="acts">';
+    if(!S.over){
+      if(T&&!S.resolved){
+        if(k===null)h+='<button id="b-'+c+'" disabled>Не даёт</button><span class="kin">'+C.name+' не помогает против этой беды.</span>';
+        else{
+          h+='<button class="primary" id="b-'+c+'" data-act="borrow" data-c="'+c+'">Занять '+k+'</button>';
+          if(T.kin===c)h+='<span class="kin">Это по её части: на 1 дешевле.</span>'.replace('её',c==='fire'?'его':c==='tomorrow'?'его':'её');
+          if(!hid&&d+k+1>L)h+='<span class="warn">К утру будет '+(d+k+1)+' при терпении '+L+': заберёт своё.</span>';
+        }
+      }
+      h+='<button id="r-'+c+'" data-act="repay" data-c="'+c+'"'+(S.work>0&&d>0?'':' disabled')+'>Вернуть 1</button>';
+      if(!hid&&(S.resolved||!T)&&d>0&&d+1>L)h+='<span class="warn">На рассвете станет '+(d+1)+': заберёт своё.</span>';
+    }
+    h+='</div></div>';
+  });
+  h+='</div>';
+  if(!S.over){
+    h+='<div class="row-actions" style="margin-top:14px;border-top:3px double var(--ink);padding-top:14px">';
+    h+='<button class="primary" id="end" data-act="end"'+(S.resolved?'':' disabled')+'>'+(S.day>=S.total?'Встретить День Расчёта':'Закончить день')+'</button>';
+    h+='<span class="hint">'+(S.resolved?'Труд, который вы не потратили, пропадёт.':'Сначала решите, что делать с бедой.')+'</span></div>';
+  }
+  $('ledger').innerHTML=h;
+}
+function drawVillage(){
+  var h='<h2>Деревня</h2><ul class="people">';
+  S.people.forEach(function(p){h+='<li class="'+(!p.alive?'gone':!p.named?'noname':'')+'">'+(p.alive&&!p.named?'безымянный':p.n)+'</li>';});
+  h+='</ul><div class="fields" aria-label="Полей: '+S.fields+'">';
+  for(var i=0;i<BM.CFG.fields;i++)h+='<span class="field'+(i<S.fields?'':' dry')+'"></span>';
+  var w='';for(var j=0;j<S.work;j++)w+='●';
+  h+='</div><dl class="tally"><dt>Поля кормят</dt><dd>до '+S.fields*BM.CFG.feeds+' человек, в деревне '+BM.alive(S).length+(BM.alive(S).length>S.fields*BM.CFG.feeds?' <span class="warn">На рассвете один уйдёт от голода.</span>':'')+'</dd>';
+  h+='<dt>Труд сегодня</dt><dd>'+(S.work?'<span class="work">'+w+'</span> — хватит вернуть '+S.work:'не осталось')+'</dd></dl>';
+  $('village').innerHTML=h;
+}
+function drawLog(){
+  var h='<h2>Журнал</h2>';
+  if(!S.log.length)h+='<p style="margin:0">Записей пока нет. Первая появится, когда вы решите, что делать с бедой.</p>';
+  else{h+='<ul>';S.log.slice(0,8).forEach(function(e){h+='<li><span>День '+e.d+'.</span>'+e.t+'</li>';});h+='</ul>';}
+  $('log').innerHTML=h;
+}
+function render(focusId){
+  $('deal-label').textContent=S.label;
+  drawTrouble();drawLedger();drawVillage();drawLog();save();
+  var el=focusId&&$(focusId);if(el&&!el.disabled)el.focus();else if(focusId&&$('end')&&!$('end').disabled)$('end').focus();
+}
+document.addEventListener('click',function(ev){
+  var b=ev.target.closest('button[data-act]');if(!b||b.disabled)return;
+  var a=b.dataset.act,c=b.dataset.c,id=b.id;
+  if(a==='borrow'){S.tookNow=[];BM.borrow(S,c);id='end';}
+  else if(a==='endure'){S.tookNow=[];BM.endure(S);id='end';}
+  else if(a==='repay'){S.tookNow=[];BM.repay(S,c);}
+  else if(a==='end'){BM.endDay(S);}
+  else if(a==='daily'){S=daily();}
+  else if(a==='random'){S=random();}
+  render(id);
+});
+function start(data){S=(data&&data.v===1&&data.deck)?data:(load()||daily());render();}
+var hot=window.claude&&window.claude.hot;
+if(hot&&hot.snapshot)hot.snapshot(function(){return S;});
+if(hot&&hot.ready)hot.ready(start);else start((hot&&hot.data)||{});
+})();
+</script>
+</body>
+</html>
