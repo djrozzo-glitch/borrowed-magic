@@ -7,126 +7,155 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alice&family=Marck+Script&family=Yeseva+One&display=swap" rel="stylesheet">
 <style>
-/* Layout idea: the whole page is one spread of a green-paper account book.
-   Left leaf = today's trouble and the village, right leaf = the Ledger. Debt is written by hand in red ink. */
+/* Layout idea: one sheet of a green-paper account book. Left: today's trouble and the village.
+   Right: the Ledger, the only boxed element. Debt is handwritten in red ink. Dawn turns the sheet dark. */
 :root{
   color-scheme: light;
-  --paper:#e3ecdd; --paper-deep:#d3dfcc; --rule:#a9c2a4;
-  --ink:#1c2a22; --ink-soft:#51645a; --red:#b0261c; --margin:#d98e86;
-  --display:"Yeseva One","Georgia",serif;
-  --body:"Alice","Georgia","Times New Roman",serif;
-  --hand:"Marck Script","Segoe Script","Comic Sans MS",cursive;
+  --paper:#e3ecdd; --paper-lift:#e9f0e4; --rule:#c3d6be;
+  --ink:#1c2a22; --ink-soft:#46584e; --ink-faint:#5d7563; --red:#a8241a;
+  --night:#1c2a22; --night-rule:#2c3f34; --night-soft:#b4c7b3; --night-red:#ee8170;
+  --display:"Yeseva One",Georgia,serif;
+  --body:"Alice",Georgia,"Times New Roman",serif;
+  --hand:"Marck Script","Segoe Script",cursive;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{
-  background:var(--paper);
-  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);
-  color:var(--ink); font:17px/1.5 var(--body); padding:24px 16px 48px;
+  background-color:var(--paper);
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px);
+  color:var(--ink); font:17px/1.5 var(--body); padding:32px 16px 48px;
 }
-.book{max-width:1000px;margin:0 auto;display:grid;gap:24px}
-header{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px;border-bottom:3px double var(--ink);padding-bottom:12px}
-h1{font:400 clamp(40px,7vw,64px)/1 var(--display);margin:0;letter-spacing:.02em}
-.motto{color:var(--ink-soft);flex:1 1 240px;margin:0}
-.deal{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--ink-soft)}
-.spread{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px}
-@media (max-width:760px){.spread{grid-template-columns:minmax(0,1fr)}}
-.leaf{display:grid;gap:20px;align-content:start}
-section{background:var(--paper);border:1px solid var(--ink);padding:16px 18px;position:relative}
-section::before{content:"";position:absolute;left:10px;top:0;bottom:0;border-left:1px solid var(--margin)}
-section>*{position:relative}
-h2{font:400 15px/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;color:var(--ink-soft)}
-.day{font-size:15px;color:var(--ink-soft);letter-spacing:.06em}
-.trouble h3{font:400 clamp(30px,5vw,42px)/1.05 var(--display);margin:4px 0 8px;text-wrap:balance}
-.trouble p{margin:0 0 10px;max-width:46ch}
-.facts{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 14px;padding:0;list-style:none;font-size:15px}
-.facts b{font-weight:400;color:var(--red)}
-.dawn{border-top:1px dashed var(--ink-soft);margin-top:14px;padding-top:10px;font-size:15px}
-.dawn ul,.log ul{margin:0;padding:0;list-style:none;display:grid;gap:4px}
-.dawn li{color:var(--red)}
-.forecast{font-size:15px;color:var(--ink-soft);margin:12px 0 0}
+.book{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 40px;padding-bottom:16px;border-bottom:4px double var(--ink)}
+h1{font:400 clamp(44px,8vw,68px)/1 var(--display);margin:0;letter-spacing:.01em}
+.motto{margin:4px 0 0;color:var(--ink-soft);font-size:16px}
+.daybox{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.daybox .now{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.daybox .num{font:400 28px/1 var(--display)}
+.daybox .rest{color:var(--ink-soft);font-size:15px}
+.ticks{display:flex;gap:4px;align-items:flex-end}
+.ticks span{width:10px;height:18px;border:1px solid var(--ink-faint)}
+.ticks .done{background:var(--ink);border-color:var(--ink)}
+.ticks .today{height:26px;border:2px solid var(--ink)}
+.ticks .due{height:26px;background:var(--red);border-color:var(--red)}
+.deal{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--ink-soft)}
+.eyebrow{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0}
+.spread{display:flex;flex-wrap:wrap;gap:32px 48px;align-items:flex-start}
+.left{flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:28px}
+.right{flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:28px}
+section{display:flex;flex-direction:column;gap:12px}
+.village,.rules{padding-top:20px;border-top:4px double var(--ink)}
+.trouble h2{font:400 clamp(38px,6vw,52px)/1.05 var(--display);margin:0;text-wrap:balance}
+.trouble p{margin:0;max-width:40ch}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1px solid var(--ink);padding:6px 12px;display:flex;gap:8px;align-items:baseline}
+.chip span{font-size:14px;color:var(--ink-soft)}
+.chip b{font:400 28px/1 var(--hand);color:var(--red)}
+.forecast{margin:6px 0 0;padding-top:10px;border-top:1px dashed var(--ink-faint);font-size:15px;color:var(--ink-soft)}
 button{
-  font:400 16px/1.2 var(--body);color:var(--ink);background:var(--paper);
-  border:1px solid var(--ink);padding:8px 12px;cursor:pointer;border-radius:2px;
-  box-shadow:2px 2px 0 var(--ink);transition:transform .08s,box-shadow .08s;
+  font:400 16px/1.2 var(--body);color:var(--ink);background:var(--paper-lift);min-height:44px;padding:0 16px;
+  border:1px solid var(--ink);border-radius:2px;cursor:pointer;transition:transform .08s,box-shadow .08s;
 }
-button:hover:not(:disabled){background:var(--paper-deep)}
-button:active:not(:disabled){transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+button:hover:not(:disabled){background:#d6e2d0}
 button:focus-visible{outline:3px solid var(--red);outline-offset:2px}
-button:disabled{color:var(--ink-soft);border-color:var(--rule);box-shadow:none;cursor:not-allowed}
-button.primary{background:var(--ink);color:var(--paper)}
-button.primary:hover:not(:disabled){background:#2c4034}
-button.primary:disabled{background:var(--paper-deep);color:var(--ink-soft)}
-button.small{font-size:14px;padding:5px 9px;box-shadow:1px 1px 0 var(--ink)}
-.row-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.hint{font-size:14px;color:var(--ink-soft)}
+button:disabled{color:var(--ink-soft);background:transparent;border:1px dashed var(--ink-faint);cursor:not-allowed}
+button.dark{background:var(--ink);color:var(--paper-lift)}
+button.dark:hover:not(:disabled){background:#2c4034}
+button.risky{color:var(--red);border:2px solid var(--red);background:var(--paper-lift)}
+button.lift{box-shadow:3px 3px 0 var(--ink)}
+button.lift:active:not(:disabled){transform:translate(3px,3px);box-shadow:none}
+button.small{min-height:36px;font-size:14px;padding:0 10px}
+button.big{min-height:48px;font-size:18px;padding:0 24px}
+.acts{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.hint{font-size:15px;color:var(--ink-soft)}
+.stamp{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);border:2px solid var(--red);padding:4px 8px;transform:rotate(-4deg);display:inline-block}
 
-.ledger{display:grid}
-.cred{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;padding:12px 0;border-top:1px solid var(--ink)}
-.cred:first-of-type{border-top:0;padding-top:0}
-.cred .who{font:400 24px/1.1 var(--display)}
+.ledger{border:1px solid var(--ink);background:var(--paper-lift);padding:22px 26px 24px;gap:0}
+@media (max-width:480px){.ledger{padding:14px 14px 16px}}
+.ledger-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.ledger-head h2{font:400 30px/1 var(--display);margin:0}
+.cred{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:16px 0;border-bottom:1px solid var(--ink)}
+.cred svg{width:40px;height:40px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cred .who{font:400 26px/1.1 var(--display)}
 .cred .takes{font-size:14px;color:var(--ink-soft)}
-.owed{font:400 34px/1 var(--hand);color:var(--red);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.owed small{font-size:20px;color:var(--ink-soft)}
+.owed{font:400 44px/1 var(--hand);color:var(--red);white-space:nowrap;font-variant-numeric:tabular-nums}
+.owed small{font-size:26px;color:var(--ink-soft)}
 .owed.clear{color:var(--ink-soft)}
-.pips{display:flex;gap:4px;flex-wrap:wrap;align-items:center;grid-column:1/-1}
+.cred .acts{grid-column:2/4}
+@media (max-width:480px){.cred .acts{grid-column:1/4}}
+.pips{display:flex;gap:5px;margin-right:6px}
 .pip{width:16px;height:16px;border:1px solid var(--ink);border-radius:50%}
 .pip.on{background:var(--red);border-color:var(--red)}
-.cred .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
-.warn{font-size:14px;color:var(--red)}
-.kin{font-size:14px;color:var(--ink-soft)}
-.cred.took{animation:took 1.1s ease-out}
-@keyframes took{0%{background:rgba(176,38,28,.28)}100%{background:transparent}}
-.stamp{font:400 13px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--red);border:2px solid var(--red);padding:3px 6px;transform:rotate(-4deg);display:inline-block}
+.forgot{width:100px;height:16px;margin-right:6px;background:repeating-linear-gradient(115deg,var(--ink) 0,var(--ink) 2px,transparent 2px,transparent 6px)}
+.note{font-size:14px;color:var(--ink-soft)}
+.warn{font-size:14px;color:var(--red);border:1px solid var(--red);padding:3px 8px}
+.ledger-foot{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding-top:18px;margin-top:-1px;border-top:4px double var(--ink)}
 
-.people{display:flex;flex-wrap:wrap;gap:6px 8px;margin:0 0 14px;padding:0;list-style:none}
-.people li{border:1px solid var(--ink);padding:2px 9px;font-size:16px}
-.people li.gone{text-decoration:line-through;color:var(--ink-soft);border-color:var(--rule)}
-.people li.noname{font-style:italic;color:var(--ink-soft);border-style:dashed}
-.fields{display:flex;gap:8px;margin:0 0 8px}
-.field{width:44px;height:32px;border:1px solid var(--ink);background:repeating-linear-gradient(90deg,#7fa172 0 4px,#b9d0ae 4px 8px)}
-.field.dry{background:none;border-style:dashed;border-color:var(--ink-soft)}
-.tally{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin:0}
+.people{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.people li{border:1px solid var(--ink);padding:3px 11px}
+.people li.gone{text-decoration:line-through;color:var(--ink-soft);border-color:#8fa890}
+.people li.noname{font-style:italic;color:var(--ink-soft);border:1px dashed var(--ink-soft)}
+.fields{display:flex;gap:10px}
+.field{width:56px;height:38px;border:1px solid var(--ink);background:repeating-linear-gradient(90deg,#6f9363 0,#6f9363 4px,#b7cfab 4px,#b7cfab 8px)}
+.field.dry{background:none;border:1px dashed var(--ink-soft)}
+.tally{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:16px;margin:0}
 .tally dt{color:var(--ink-soft)}.tally dd{margin:0}
-.work{letter-spacing:.2em}
+.tally .red{color:var(--red)}
+.work{display:inline-flex;gap:9px;margin:0 12px 0 4px;vertical-align:middle}
+.work i{width:13px;height:13px;background:var(--ink);transform:rotate(45deg)}
 .rules ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px}
-.log{font-size:14px;color:var(--ink-soft)}
-.log li span{color:var(--ink);font-variant-numeric:tabular-nums;margin-right:6px}
-.verdict h3{font:400 clamp(30px,5vw,44px)/1.05 var(--display);margin:4px 0 8px}
-.verdict .score{font:400 40px/1 var(--hand);color:var(--red)}
+.log ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 16px;font-size:15px}
+.log li{display:contents}
+.log li span:first-child{color:var(--ink-soft);white-space:nowrap}
+.log .took{color:var(--red)}
+
+.dawn{background-color:var(--night);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--night-rule) 31px,var(--night-rule) 32px);color:var(--paper);padding:44px clamp(20px,5vw,56px);gap:22px;animation:dusk .5s ease-out}
+@keyframes dusk{from{opacity:.2}to{opacity:1}}
+.dawn .eyebrow{color:var(--night-soft)}
+.dawn-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:16px 24px}
+.dawn h2{font:400 clamp(38px,7vw,60px)/1.02 var(--display);margin:8px 0 0;text-wrap:balance}
+.dawn .seal{padding:8px 14px;border:3px solid var(--night-red);color:var(--night-red);font-size:24px;letter-spacing:.16em;text-transform:uppercase;transform:rotate(-5deg)}
+.dawn ul{margin:0;padding:20px 0;list-style:none;display:grid;gap:10px;border-top:1px solid var(--night-soft);border-bottom:1px solid var(--night-soft);font-size:19px;max-width:none}
+.dawn-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px 24px}
+.dawn dl{margin:0;display:grid;grid-template-columns:auto auto;gap:2px 18px;font-size:15px;justify-content:start}
+.dawn dt{color:var(--night-soft)}.dawn dd{margin:0}
+.dawn dt.all{grid-column:1/3;margin-bottom:4px}
+.dawn button{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.dawn button:focus-visible{outline-color:var(--night-red)}
+
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:36px 44px}
+.verdict h2{font:400 clamp(34px,6vw,46px)/1.05 var(--display);margin:0;text-wrap:balance}
+.score{display:flex;align-items:baseline;gap:14px}
+.score b{font:400 110px/.9 var(--hand);color:var(--red)}
+.score span{font-size:20px;line-height:1.25;color:var(--ink-soft);max-width:14ch}
+.closed{border:1px solid var(--ink);background:var(--paper-lift);padding:20px 24px;gap:0}
+.closed h3{font:400 24px/1 var(--display);margin:0}
+.closed table{border-collapse:collapse;width:100%}
+.closed td{padding:11px 16px 11px 0;border-bottom:1px solid var(--ink);vertical-align:baseline;font-size:15px}
+.closed tr:last-child td{border-bottom:0}
+.closed td.who{font:400 20px/1.2 var(--display)}
+.closed td.left{font:400 30px/1 var(--hand);color:var(--red)}
+.closed td.left.zero,.closed td.none{color:var(--ink-soft)}
+.share{margin-top:14px;padding-top:14px;border-top:4px double var(--ink);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;font-size:15px;color:var(--ink-soft)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="book">
   <header>
-    <h1>Взаймы</h1>
-    <p class="motto">Магия никому не принадлежит. Её берут в долг у реки, огня, памяти и завтрашнего дня.</p>
-    <div class="deal"><span id="deal-label"></span>
-      <button class="small" id="btn-daily" data-act="daily">Расклад дня</button>
-      <button class="small" id="btn-random" data-act="random">Случайный расклад</button>
+    <div>
+      <h1>Взаймы</h1>
+      <p class="motto">Магия никому не принадлежит. Её берут в долг.</p>
+    </div>
+    <div class="daybox">
+      <div id="daybar"></div>
+      <div class="deal"><span id="deal-label"></span>
+        <button class="small" id="btn-daily" data-act="daily">Расклад дня</button>
+        <button class="small" id="btn-random" data-act="random">Случайный</button>
+      </div>
     </div>
   </header>
-  <div class="spread">
-    <div class="leaf">
-      <section class="trouble" id="trouble" aria-live="polite"></section>
-      <section id="village"></section>
-    </div>
-    <div class="leaf">
-      <section id="ledger"></section>
-      <section class="rules">
-        <h2>Условия займа</h2>
-        <ol>
-          <li>Каждый день приходит беда. Займите магию у одного кредитора или перетерпите.</li>
-          <li>На рассвете каждый непогашенный долг растёт на 1.</li>
-          <li>Долг больше терпения: кредитор забирает своё. После этого терпения у него меньше.</li>
-          <li>Жители с именами работают. Их трудом вы возвращаете долг.</li>
-          <li>После 20-го дня наступает День Расчёта: взыщут всё, что осталось.</li>
-        </ol>
-      </section>
-      <section class="log" id="log"></section>
-    </div>
-  </div>
+  <main id="stage" aria-live="polite"></main>
 </div>
 <script>
 /* ---------- Game core: no DOM, state is plain JSON ---------- */
@@ -136,10 +165,10 @@ var CFG={days:20,limit:5,minLimit:2,workDiv:4,feeds:3,fields:4};
 var NAMES=['Веда','Ждан','Мирра','Олех','Ярина','Тихон','Борк','Лада'];
 var ORDER=['river','fire','memory','tomorrow'];
 var CRED={
-  river:{name:'Река',dat:'Реке',takes:'поле',took:'Река взяла своё'},
-  fire:{name:'Огонь',dat:'Огню',takes:'очаг вместе с жильцом',took:'Огонь взял своё'},
-  memory:{name:'Память',dat:'Памяти',takes:'имя жителя',took:'Память взяла своё'},
-  tomorrow:{name:'Завтра',dat:'Завтра',takes:'ваш следующий день',took:'Завтра взяло своё'}
+  river:{name:'Река',dat:'Реке',gen:'Реки',takes:'забирает поле',took:'Река взяла своё'},
+  fire:{name:'Огонь',dat:'Огню',gen:'Огня',takes:'забирает очаг вместе с жильцом',took:'Огонь взял своё'},
+  memory:{name:'Память',dat:'Памяти',gen:'Памяти',takes:'забирает имя жителя',took:'Память взяла своё'},
+  tomorrow:{name:'Завтра',dat:'Завтра',gen:'Завтра',takes:'забирает ваш следующий день',took:'Завтра взяло своё'}
 };
 var TROUBLES={
   drought:{name:'Засуха',text:'Колодцы показывают дно. Земля трескается под ногами.',hit:'fields',kin:'river',bar:'fire'},
@@ -158,13 +187,13 @@ function named(S){return S.people.filter(function(p){return p.alive&&p.named;});
 function workOf(S){return Math.ceil(named(S).length/CFG.workDiv);}
 function today(S){return S.deck[S.day-1];}
 function hitSize(sev){return Math.ceil(sev/2);}
-function note(S,text,dawn){S.log.unshift({d:S.day,t:text});if(S.log.length>60)S.log.pop();if(dawn)S.dawn.push(text);}
+function note(S,text,dawn,took){S.log.unshift({d:S.day,t:text,k:took?1:0});if(S.log.length>60)S.log.pop();if(dawn)S.dawn.push(text);}
 
 function newGame(seed,label){
-  var S={v:1,seed:seed,label:label,rng:seed|0,day:1,total:CFG.days,fields:CFG.fields,
+  var S={v:2,seed:seed,label:label,rng:seed|0,day:1,total:CFG.days,fields:CFG.fields,
     people:NAMES.map(function(n){return{n:n,named:true,alive:true};}),
     debt:{river:0,fire:0,memory:0,tomorrow:0},limit:{river:CFG.limit,fire:CFG.limit,memory:CFG.limit,tomorrow:CFG.limit},
-    hidden:[],forecast:true,skip:0,deck:[],resolved:false,work:0,log:[],dawn:[],tookNow:[],over:null};
+    hidden:[],forecast:true,skip:0,deck:[],resolved:false,work:0,log:[],dawn:[],tookNow:[],tookWhat:[],grew:[],showDawn:false,final:null,over:null};
   var ids=Object.keys(TROUBLES),prev=null,quietBefore=true;
   for(var d=1;d<=S.total;d++){
     var sev=(d<=5?1:d<=12?2:3)+Math.floor(rnd(S)*2);
@@ -188,29 +217,30 @@ function strike(S,kind,n,dawn,why){
   if(gone.length)note(S,why+': деревня потеряла ('+gone.join(', ')+').',dawn);
 }
 function take(S,cid,final){
-  var C=CRED[cid];S.tookNow.push(cid);
+  var C=CRED[cid],what=null;if(S.tookNow.indexOf(cid)<0)S.tookNow.push(cid);
   if(cid==='river'){
-    if(S.fields>0){S.fields--;note(S,C.took+': поле у воды высохло.',true);}
-    else{var w=loseOne(S);note(S,C.took+': полей не осталось, ушёл человек ('+w+').',true);}
+    if(S.fields>0){S.fields--;what='поле у воды';note(S,C.took+': поле у воды высохло.',true,true);}
+    else{var w=loseOne(S);if(w){what='человека ('+w+')';note(S,C.took+': полей не осталось, ушёл человек ('+w+').',true,true);}}
   }else if(cid==='fire'){
-    var who=loseOne(S);note(S,C.took+': погас очаг, дом опустел ('+who+').',true);
+    var who=loseOne(S);if(who){what='очаг и жильца ('+who+')';note(S,C.took+': погас очаг, дом опустел ('+who+').',true,true);}
   }else if(cid==='memory'){
     var ns=named(S);
-    if(ns.length){var p=ns[Math.floor(rnd(S)*ns.length)];p.named=false;note(S,C.took+': никто не помнит, как звали '+p.n+'. Безымянные не работают.',true);}
+    if(ns.length){var p=ns[Math.floor(rnd(S)*ns.length)];p.named=false;what='имя ('+p.n+')';note(S,C.took+': никто не помнит, как звали '+p.n+'. Безымянные не работают.',true,true);}
     var nx=['memory','tomorrow','fire','river'].filter(function(c){return S.hidden.indexOf(c)<0;})[0];
-    if(nx&&!final){S.hidden.push(nx);note(S,'Вы больше не помните, сколько должны '+CRED[nx].dat+'.',true);}
+    if(nx&&!final){S.hidden.push(nx);note(S,'Вы больше не помните, сколько должны '+CRED[nx].dat+'.',true,true);}
   }else{
-    if(final){var x=loseOne(S);note(S,C.took+': дней больше нет, поэтому оно забрало человека ('+x+').',true);}
-    else{S.skip++;S.forecast=false;note(S,C.took+': следующий день пройдёт без вас. Вы больше не видите, что будет.',true);}
+    if(final){var x=loseOne(S);if(x){what='человека ('+x+'), потому что дней больше нет';note(S,C.took+': дней больше нет, поэтому оно забрало человека ('+x+').',true,true);}}
+    else{S.skip++;S.forecast=false;what='следующий день';note(S,C.took+': следующий день пройдёт без вас. Вы больше не видите, что будет.',true,true);}
   }
+  if(what)S.tookWhat.push({c:cid,t:what});
 }
 function hunger(S,dawn){var cap=S.fields*CFG.feeds;if(alive(S).length>cap){var w=loseOne(S);note(S,'Полей не хватает, чтобы прокормить всех. Деревню покинул: '+w+'.',dawn);}}
-function finish(S,early){S.over={early:!!early,named:named(S).length,alive:alive(S).length,fields:S.fields};S.resolved=true;S.work=0;return true;}
+function finish(S,early){S.over={early:!!early,named:named(S).length,alive:alive(S).length,fields:S.fields};S.resolved=true;S.work=0;S.showDawn=false;return true;}
 function dead(S){return named(S).length===0?finish(S,true):false;}
 function borrow(S,cid){
   if(S.over||S.resolved)return false;var c=cost(S,cid);if(c===null)return false;
   S.debt[cid]+=c;S.resolved=true;
-  note(S,TROUBLES[today(S).t].name+': заняли '+c+' у '+({river:'Реки',fire:'Огня',memory:'Памяти',tomorrow:'Завтра'})[cid]+'.');return true;
+  note(S,TROUBLES[today(S).t].name+': заняли '+c+' у '+CRED[cid].gen+'.');return true;
 }
 function endure(S){
   if(S.over||S.resolved)return false;var tr=today(S),T=TROUBLES[tr.t];
@@ -219,16 +249,22 @@ function endure(S){
 function repay(S,cid){if(S.over||S.work<=0||S.debt[cid]<=0)return false;S.debt[cid]--;S.work--;return true;}
 function endDay(S){
   if(S.over||!S.resolved)return false;
-  S.dawn=[];S.tookNow=[];hunger(S,true);
+  S.dawn=[];S.tookNow=[];S.tookWhat=[];S.grew=[];hunger(S,true);
   for(;;){
     if(dead(S))return true;
     S.day++;
     if(S.day>S.total){
       S.day=S.total;note(S,'День Расчёта. Кредиторы пришли все разом.',true);
-      ORDER.forEach(function(c){var n=Math.ceil(S.debt[c]/S.limit[c]);for(var i=0;i<n;i++)take(S,c,true);S.debt[c]=0;});
+      S.final={};
+      ORDER.forEach(function(c){
+        var before=S.tookWhat.length,d=S.debt[c],n=Math.ceil(d/S.limit[c]);
+        for(var i=0;i<n;i++)take(S,c,true);
+        S.final[c]={debt:d,items:S.tookWhat.slice(before).map(function(x){return x.t;})};S.debt[c]=0;
+      });
       return finish(S,named(S).length===0);
     }
-    ORDER.forEach(function(c){if(S.debt[c]>0)S.debt[c]++;});
+    S.grew=[];
+    ORDER.forEach(function(c){if(S.debt[c]>0){S.debt[c]++;S.grew.push({c:c,from:S.debt[c]-1,to:S.debt[c]});}});
     ORDER.forEach(function(c){
       if(S.debt[c]>S.limit[c]){var n=Math.floor(S.debt[c]/S.limit[c]);for(var i=0;i<n;i++)take(S,c,false);S.debt[c]-=n*S.limit[c];S.limit[c]=Math.max(CFG.minLimit,S.limit[c]-1);}
     });
@@ -241,7 +277,7 @@ function endDay(S){
     }
     break;
   }
-  S.resolved=!today(S).t;S.work=workOf(S);return true;
+  S.resolved=!today(S).t;S.work=workOf(S);S.showDawn=S.tookNow.length>0;return true;
 }
 globalThis.BM={CFG:CFG,CRED:CRED,ORDER:ORDER,TROUBLES:TROUBLES,newGame:newGame,cost:cost,borrow:borrow,endure:endure,repay:repay,endDay:endDay,
   today:today,alive:alive,named:named,workOf:workOf,hitSize:hitSize};
@@ -250,109 +286,146 @@ globalThis.BM={CFG:CFG,CRED:CRED,ORDER:ORDER,TROUBLES:TROUBLES,newGame:newGame,c
 /* ---------- Interface ---------- */
 if(typeof document!=='undefined')(function(){
 'use strict';
-var BM=globalThis.BM,S=null,KEY='borrowed-magic-run-v1';
+var BM=globalThis.BM,S=null,KEY='borrowed-magic-run-v2',copied='';
 var $=function(id){return document.getElementById(id);};
+var SIGIL={
+  river:'<path d="M4 13c4-4 7-4 11 0s7 4 11 0 7-4 10 0"/><path d="M4 21c4-4 7-4 11 0s7 4 11 0 7-4 10 0"/><path d="M4 29c4-4 7-4 11 0s7 4 11 0 7-4 10 0"/>',
+  fire:'<path d="M20 4c2 7 10 10 10 19a10 10 0 0 1-20 0c0-4 2-6 4-9 1 3 2 4 4 5-1-6 0-10 2-15z"/><path d="M20 33a4 4 0 0 0 4-4c0-3-3-4-4-7-1 3-4 4-4 7a4 4 0 0 0 4 4z"/>',
+  memory:'<path d="M20 20a3 3 0 1 1 3 3 6 6 0 1 1-6-6 9 9 0 1 1 9 9 12 12 0 1 1-12-12"/>',
+  tomorrow:'<path d="M4 28h32"/><path d="M10 28a10 10 0 0 1 20 0"/><path d="M20 6v6M7 13l4 4M33 13l-4 4"/><path d="M12 34h16"/>'
+};
 function hash(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h|0;}
 function daily(){var d=new Date(),p=function(n){return(n<10?'0':'')+n;};
   var iso=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
   return BM.newGame(hash(iso),'Расклад дня, '+p(d.getDate())+'.'+p(d.getMonth()+1));}
 function random(){var s=(Math.random()*4294967296)|0;return BM.newGame(s,'Случайный расклад №'+((s>>>0)%10000));}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
-function load(){try{var r=JSON.parse(localStorage.getItem(KEY));return r&&r.v===1&&r.deck?r:null;}catch(e){return null;}}
+function load(){try{var r=JSON.parse(localStorage.getItem(KEY));return r&&r.v===2&&r.deck?r:null;}catch(e){return null;}}
 function plural(n,a,b,c){var m=n%100,k=n%10;return m>10&&m<20?c:k===1?a:k>=2&&k<=4?b:c;}
 
-function drawTrouble(){
-  var h='';
-  if(S.over){
-    var n=S.over.named,rank=n>=8?'Чистая книга':n>=6?'Добрый должник':n>=3?'Расплатились как смогли':n>=1?'Последний свидетель':'Пустая деревня';
-    h+='<div class="day">'+(S.over.early?'День '+S.day+' из '+S.total:'День Расчёта')+'</div>';
-    h+='<div class="verdict"><h3>'+rank+'</h3>';
-    h+='<p>'+(n>0?'Долги закрыты. Своё имя помнят <span class="score">'+n+'</span> из 8 жителей, полей осталось '+S.over.fields+'.'
-      :'В деревне не осталось никого, кто помнит своё имя. Долг взыскан полностью.')+'</p>';
-    h+='<div class="row-actions"><button class="primary" id="again-daily" data-act="daily">Расклад дня заново</button><button id="again-random" data-act="random">Случайный расклад</button></div></div>';
-  }else{
-    var tr=BM.today(S);
-    h+='<div class="day">День '+S.day+' из '+S.total+' · до Дня Расчёта '+(S.total-S.day+1)+'</div>';
-    if(tr.t){
-      var T=BM.TROUBLES[tr.t],hs=BM.hitSize(tr.sev);
-      h+='<h3>'+T.name+'</h3><p>'+T.text+'</p>';
-      h+='<ul class="facts"><li>Сила беды: <b>'+tr.sev+'</b></li><li>Если перетерпеть: <b>−'+hs+' '+(T.hit==='fields'?plural(hs,'поле','поля','полей'):plural(hs,'житель','жителя','жителей'))+'</b></li></ul>';
-      h+='<div class="row-actions">';
-      if(S.resolved)h+='<span class="stamp">Решено</span><span class="hint">Верните часть долга или закончите день.</span>';
-      else h+='<button id="endure" data-act="endure">Перетерпеть</button><span class="hint">Или займите у кредитора в Книге долгов.</span>';
-      h+='</div>';
-    }else{
-      h+='<h3>Тихий день</h3><p>Никто не стучит в ворота. Можно поработать на кредиторов.</p>';
-    }
-    var nx=S.deck[S.day];
-    h+='<p class="forecast">'+(S.day>=S.total?'Завтра День Расчёта.':!S.forecast?'Завтра вам больше не видно.':nx.t?'Завтра: '+BM.TROUBLES[nx.t].name+', сила '+nx.sev+'.':'Завтра: тихий день.')+'</p>';
-  }
-  if(S.dawn.length){h+='<div class="dawn"><h2>'+(S.over&&!S.over.early?'Расчёт':'Что случилось на рассвете')+'</h2><ul>';S.dawn.forEach(function(t){h+='<li>'+t+'</li>';});h+='</ul></div>';}
-  $('trouble').innerHTML=h;
+function drawDaybar(){
+  var h='<div class="now"><span class="num">'+(S.over&&!S.over.early?'День Расчёта':'День '+S.day)+'</span><span class="rest">'+
+    (S.over?(S.over.early?'из '+S.total+'. Игра окончена':'книга закрыта'):'из '+S.total+'. До Дня Расчёта '+(S.total-S.day+1))+'</span></div><div class="ticks" aria-hidden="true">';
+  for(var d=1;d<=S.total;d++)h+='<span class="'+(d<S.day||(S.over&&!S.over.early)?'done':d===S.day?'today':'')+'"></span>';
+  h+='<span class="due"></span></div>';
+  $('daybar').innerHTML=h;
 }
-function drawLedger(){
-  var h='<h2>Книга долгов</h2><div class="ledger">';
+function troubleHtml(){
+  var tr=BM.today(S),h='<section class="trouble"><p class="eyebrow">Беда дня</p>';
+  if(tr.t){
+    var T=BM.TROUBLES[tr.t],hs=BM.hitSize(tr.sev);
+    h+='<h2>'+T.name+'</h2><p>'+T.text+'</p><div class="chips"><div class="chip"><span>Сила беды</span><b>'+tr.sev+'</b></div>'+
+      '<div class="chip"><span>Если перетерпеть</span><b>−'+hs+' '+(T.hit==='fields'?plural(hs,'поле','поля','полей'):plural(hs,'житель','жителя','жителей'))+'</b></div></div><div class="acts">';
+    if(S.resolved)h+='<span class="stamp">Решено</span><span class="hint">Верните часть долга или закончите день.</span>';
+    else h+='<button class="lift" id="endure" data-act="endure">Перетерпеть</button><span class="hint">или займите у кредитора в Книге долгов</span>';
+    h+='</div>';
+  }else h+='<h2>Тихий день</h2><p>Никто не стучит в ворота. Можно поработать на кредиторов.</p>';
+  var nx=S.deck[S.day];
+  h+='<p class="forecast">'+(S.day>=S.total?'Завтра День Расчёта.':!S.forecast?'Завтра вам больше не видно.':nx.t?'Завтра: '+BM.TROUBLES[nx.t].name+', сила '+nx.sev+'.':'Завтра: тихий день.')+'</p></section>';
+  return h;
+}
+function villageHtml(){
+  var h='<section class="village"><p class="eyebrow">Деревня</p><ul class="people">',al=BM.alive(S).length,cap=S.fields*BM.CFG.feeds,w='';
+  S.people.forEach(function(p){h+='<li class="'+(!p.alive?'gone':!p.named?'noname':'')+'">'+(p.alive&&!p.named?'безымянный':p.n)+'</li>';});
+  h+='</ul><div class="fields" role="img" aria-label="Полей: '+S.fields+' из '+BM.CFG.fields+'">';
+  for(var i=0;i<BM.CFG.fields;i++)h+='<span class="field'+(i<S.fields?'':' dry')+'"></span>';
+  for(var j=0;j<S.work;j++)w+='<i></i>';
+  h+='</div><dl class="tally"><dt>Поля кормят</dt><dd>до '+cap+' человек, в деревне '+al+(al>cap?' <span class="red">На рассвете один уйдёт от голода.</span>':'')+'</dd>'+
+    '<dt>Работают</dt><dd>'+BM.named(S).length+' с именами</dd>'+
+    '<dt>Труд сегодня</dt><dd>'+(S.work?'<span class="work" aria-hidden="true">'+w+'</span>хватит вернуть '+S.work:'не осталось')+'</dd></dl></section>';
+  return h;
+}
+function ledgerHtml(){
+  var T=BM.today(S).t?BM.TROUBLES[BM.today(S).t]:null;
+  var h='<section class="ledger"><div class="ledger-head"><h2>Книга долгов</h2><span class="eyebrow">долг / терпение</span></div>';
   BM.ORDER.forEach(function(c){
-    var C=BM.CRED[c],d=S.debt[c],L=S.limit[c],hid=S.hidden.indexOf(c)>=0,k=S.over?null:BM.cost(S,c),T=BM.today(S).t?BM.TROUBLES[BM.today(S).t]:null;
-    h+='<div class="cred'+(S.tookNow.indexOf(c)>=0?' took':'')+'"><div><div class="who">'+C.name+'</div><div class="takes">Забирает: '+C.takes+'</div></div>';
-    h+='<div class="owed'+(d===0&&!hid?' clear':'')+'" aria-label="Долг '+(hid?'неизвестен':d+' при терпении '+L)+'">'+(hid?'?':d)+' <small>/ '+(hid?'?':L)+'</small></div>';
-    if(!hid){h+='<div class="pips" aria-hidden="true">';for(var i=0;i<L;i++)h+='<span class="pip'+(i<d?' on':'')+'"></span>';h+='</div>';}
-    h+='<div class="acts">';
-    if(!S.over){
-      if(T&&!S.resolved){
-        if(k===null)h+='<button id="b-'+c+'" disabled>Не даёт</button><span class="kin">'+C.name+' не помогает против этой беды.</span>';
-        else{
-          h+='<button class="primary" id="b-'+c+'" data-act="borrow" data-c="'+c+'">Занять '+k+'</button>';
-          if(T.kin===c)h+='<span class="kin">Это по её части: на 1 дешевле.</span>'.replace('её',c==='fire'?'его':c==='tomorrow'?'его':'её');
-          if(!hid&&d+k+1>L)h+='<span class="warn">К утру будет '+(d+k+1)+' при терпении '+L+': заберёт своё.</span>';
-        }
-      }
-      h+='<button id="r-'+c+'" data-act="repay" data-c="'+c+'"'+(S.work>0&&d>0?'':' disabled')+'>Вернуть 1</button>';
-      if(!hid&&(S.resolved||!T)&&d>0&&d+1>L)h+='<span class="warn">На рассвете станет '+(d+1)+': заберёт своё.</span>';
+    var C=BM.CRED[c],d=S.debt[c],L=S.limit[c],hid=S.hidden.indexOf(c)>=0,k=BM.cost(S,c);
+    h+='<div class="cred"><svg viewBox="0 0 40 40" aria-hidden="true">'+SIGIL[c]+'</svg><div><div class="who">'+C.name+'</div><div class="takes">'+C.takes+'</div></div>';
+    h+='<div class="owed'+(d===0&&!hid?' clear':'')+'" aria-label="Долг '+(hid?'забыт':d+' при терпении '+L)+'">'+(hid?'?':d)+' <small>/ '+(hid?'?':L)+'</small></div><div class="acts">';
+    if(hid)h+='<span class="forgot" aria-hidden="true"></span>';
+    else{h+='<span class="pips" aria-hidden="true">';for(var i=0;i<L;i++)h+='<span class="pip'+(i<d?' on':'')+'"></span>';h+='</span>';}
+    var risk=!hid&&T&&!S.resolved&&k!==null&&d+k+1>L;
+    if(T&&!S.resolved){
+      if(k===null)h+='<button id="b-'+c+'" disabled>Не даёт</button>';
+      else h+='<button class="'+(risk?'risky':'dark')+'" id="b-'+c+'" data-act="borrow" data-c="'+c+'">Занять '+k+'</button>';
     }
+    h+='<button id="r-'+c+'" data-act="repay" data-c="'+c+'"'+(S.work>0&&d>0?'':' disabled')+'>Вернуть 1</button>';
+    if(T&&!S.resolved&&k===null)h+='<span class="note">'+C.name+' не помогает против этой беды.</span>';
+    else if(risk)h+='<span class="warn">К утру будет '+(d+k+1)+' при терпении '+L+': возьмёт своё</span>';
+    else if(!hid&&(S.resolved||!T)&&d>0&&d+1>L)h+='<span class="warn">На рассвете станет '+(d+1)+': возьмёт своё</span>';
+    else if(hid)h+='<span class="note">Вы не помните этот счёт.</span>';
+    else if(T&&!S.resolved&&T.kin===c)h+='<span class="note">Эта беда по '+(c==='river'||c==='memory'?'её':'его')+' части: на 1 дешевле.</span>';
     h+='</div></div>';
   });
-  h+='</div>';
-  if(!S.over){
-    h+='<div class="row-actions" style="margin-top:14px;border-top:3px double var(--ink);padding-top:14px">';
-    h+='<button class="primary" id="end" data-act="end"'+(S.resolved?'':' disabled')+'>'+(S.day>=S.total?'Встретить День Расчёта':'Закончить день')+'</button>';
-    h+='<span class="hint">'+(S.resolved?'Труд, который вы не потратили, пропадёт.':'Сначала решите, что делать с бедой.')+'</span></div>';
-  }
-  $('ledger').innerHTML=h;
+  h+='<div class="ledger-foot"><button class="big dark" id="end" data-act="end"'+(S.resolved?'':' disabled')+'>'+(S.day>=S.total?'Встретить День Расчёта':'Закончить день')+'</button>'+
+    '<span class="hint">'+(S.resolved?'Труд, который вы не потратили, пропадёт.':'Сначала решите, что делать с бедой.')+'</span></div></section>';
+  return h;
 }
-function drawVillage(){
-  var h='<h2>Деревня</h2><ul class="people">';
-  S.people.forEach(function(p){h+='<li class="'+(!p.alive?'gone':!p.named?'noname':'')+'">'+(p.alive&&!p.named?'безымянный':p.n)+'</li>';});
-  h+='</ul><div class="fields" aria-label="Полей: '+S.fields+'">';
-  for(var i=0;i<BM.CFG.fields;i++)h+='<span class="field'+(i<S.fields?'':' dry')+'"></span>';
-  var w='';for(var j=0;j<S.work;j++)w+='●';
-  h+='</div><dl class="tally"><dt>Поля кормят</dt><dd>до '+S.fields*BM.CFG.feeds+' человек, в деревне '+BM.alive(S).length+(BM.alive(S).length>S.fields*BM.CFG.feeds?' <span class="warn">На рассвете один уйдёт от голода.</span>':'')+'</dd>';
-  h+='<dt>Труд сегодня</dt><dd>'+(S.work?'<span class="work">'+w+'</span> — хватит вернуть '+S.work:'не осталось')+'</dd></dl>';
-  $('village').innerHTML=h;
+function logHtml(){
+  var h='<section class="log"><p class="eyebrow">Журнал</p>';
+  if(!S.log.length)h+='<p class="hint" style="margin:0">Записей пока нет. Первая появится, когда вы решите, что делать с бедой.</p>';
+  else{h+='<ul>';S.log.slice(0,7).forEach(function(e){h+='<li><span>День '+e.d+'</span><span'+(e.k?' class="took"':'')+'>'+e.t+'</span></li>';});h+='</ul>';}
+  return h+'</section>';
 }
-function drawLog(){
-  var h='<h2>Журнал</h2>';
-  if(!S.log.length)h+='<p style="margin:0">Записей пока нет. Первая появится, когда вы решите, что делать с бедой.</p>';
-  else{h+='<ul>';S.log.slice(0,8).forEach(function(e){h+='<li><span>День '+e.d+'.</span>'+e.t+'</li>';});h+='</ul>';}
-  $('log').innerHTML=h;
+var RULES='<section class="rules"><p class="eyebrow">Условия займа</p><ol>'+
+  '<li>Каждый день приходит беда. Займите магию у одного кредитора или перетерпите.</li>'+
+  '<li>На рассвете каждый непогашенный долг растёт на 1.</li>'+
+  '<li>Долг больше терпения: кредитор берёт своё. После этого терпения у него меньше.</li>'+
+  '<li>Жители с именами работают: четверо дают 1 труд в день. Трудом возвращают долг.</li>'+
+  '<li>После 20-го дня наступает День Расчёта: взыщут всё, что осталось.</li></ol></section>';
+function dawnHtml(){
+  var one=S.tookNow.length===1,h='<section class="dawn"><div class="dawn-top"><div><p class="eyebrow">Рассвет, день '+S.day+'</p><h2>'+
+    (one?BM.CRED[S.tookNow[0]].took:'Кредиторы взяли своё')+'</h2></div><div class="seal">Взыскано</div></div><ul>';
+  S.dawn.forEach(function(t){h+='<li>'+t+'</li>';});
+  h+='</ul><div class="dawn-foot"><dl>';
+  var grew=S.grew.filter(function(g){return S.tookNow.indexOf(g.c)<0;});
+  if(grew.length){h+='<dt class="all">За ночь остальные долги выросли на 1</dt>';
+    grew.forEach(function(g){var hid=S.hidden.indexOf(g.c)>=0;h+='<dt>'+BM.CRED[g.c].name+'</dt><dd>'+(hid?'счёт забыт':g.from+' → '+g.to+' при терпении '+S.limit[g.c])+'</dd>';});}
+  h+='</dl><button class="big" id="wake" data-act="wake">Начать день '+S.day+'</button></div></section>';
+  return h;
+}
+function shareLine(){return 'Взаймы. '+S.label+': '+S.over.named+' из 8, '+plural(S.over.fields,'осталось','осталось','осталось')+' полей: '+S.over.fields;}
+function verdictHtml(){
+  var n=S.over.named,rank=n>=8?'Чистая книга':n>=6?'Добрый должник':n>=3?'Расплатились как смогли':n>=1?'Последний свидетель':'Пустая деревня';
+  var h='<div class="verdict"><section><p class="eyebrow">'+(S.over.early?'День '+S.day+' из '+S.total:'День Расчёта')+'. '+S.label+'</p><h2>'+rank+'</h2>';
+  h+='<div class="score"><b>'+n+'</b><span>из 8 жителей помнят своё имя</span></div>';
+  if(n){h+='<ul class="people">';BM.named(S).forEach(function(p){h+='<li>'+p.n+'</li>';});h+='</ul>';}
+  else h+='<p style="margin:0;max-width:40ch">В деревне не осталось никого, кто помнит своё имя. Долг взыскан полностью.</p>';
+  h+='<div class="acts" style="margin-top:12px"><button class="dark" id="again-daily" data-act="daily">Расклад дня заново</button><button class="lift" id="again-random" data-act="random">Случайный расклад</button></div></section>';
+  h+='<section class="closed"><div class="ledger-head"><h3>'+(S.final?'Книга закрыта':'Что случилось')+'</h3><span class="eyebrow">'+(S.final?'остаток и что взято':'последний рассвет')+'</span></div>';
+  if(S.final){h+='<table>';BM.ORDER.forEach(function(c){var f=S.final[c];
+    h+='<tr><td class="who">'+BM.CRED[c].name+'</td><td class="left'+(f.debt?'':' zero')+'">'+f.debt+'</td><td'+(f.items.length?'>взято: '+f.items.join('; '):' class="none">'+(f.debt?'взять было нечего':'долг погашен, ничего не взято'))+'</td></tr>';});
+    h+='</table>';}
+  else{h+='<table>';(S.dawn.length?S.dawn:[S.log[0]?S.log[0].t:'']).forEach(function(t){h+='<tr><td>'+t+'</td></tr>';});h+='</table>';}
+  h+='<div class="share"><span id="share-text">'+shareLine()+'</span><button id="copy" data-act="copy">'+(copied||'Скопировать')+'</button></div></section></div>';
+  return h;
 }
 function render(focusId){
-  $('deal-label').textContent=S.label;
-  drawTrouble();drawLedger();drawVillage();drawLog();save();
-  var el=focusId&&$(focusId);if(el&&!el.disabled)el.focus();else if(focusId&&$('end')&&!$('end').disabled)$('end').focus();
+  $('deal-label').textContent=S.label;drawDaybar();
+  $('stage').innerHTML=S.over?verdictHtml():S.showDawn?dawnHtml():
+    '<div class="spread"><div class="left">'+troubleHtml()+villageHtml()+RULES+'</div><div class="right">'+ledgerHtml()+logHtml()+'</div></div>';
+  save();
+  var el=focusId&&$(focusId);if(el&&!el.disabled)el.focus();else if(focusId){el=$('wake')||$('end');if(el&&!el.disabled)el.focus();}
 }
 document.addEventListener('click',function(ev){
   var b=ev.target.closest('button[data-act]');if(!b||b.disabled)return;
   var a=b.dataset.act,c=b.dataset.c,id=b.id;
-  if(a==='borrow'){S.tookNow=[];BM.borrow(S,c);id='end';}
-  else if(a==='endure'){S.tookNow=[];BM.endure(S);id='end';}
-  else if(a==='repay'){S.tookNow=[];BM.repay(S,c);}
-  else if(a==='end'){BM.endDay(S);}
+  if(a==='copy'){
+    var done=function(ok){copied=ok?'Скопировано':'Не вышло скопировать';render('copy');};
+    try{navigator.clipboard.writeText(shareLine()).then(function(){done(true);},function(){done(false);});}catch(e){done(false);}
+    return;
+  }
+  copied='';
+  if(a==='borrow'){BM.borrow(S,c);id='end';}
+  else if(a==='endure'){BM.endure(S);id='end';}
+  else if(a==='repay'){BM.repay(S,c);}
+  else if(a==='end'){BM.endDay(S);id='end';}
+  else if(a==='wake'){S.showDawn=false;id='endure';}
   else if(a==='daily'){S=daily();}
   else if(a==='random'){S=random();}
   render(id);
 });
-function start(data){S=(data&&data.v===1&&data.deck)?data:(load()||daily());render();}
+function start(data){S=(data&&data.v===2&&data.deck)?data:(load()||daily());render();}
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return S;});
 if(hot&&hot.ready)hot.ready(start);else start((hot&&hot.data)||{});
